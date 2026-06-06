@@ -1,4 +1,31 @@
-// This is from main branch
-// Testing branches
-// Branch is working
-// Source control practoce
+import { test, expect } from "@playwright/test";
+import { LoginPage } from "../pages/LoginPage";
+
+test.describe("Login", () => {
+  let loginPage: LoginPage;
+
+  test.beforeEach(async ({ page }) => {
+    loginPage = new LoginPage(page);
+    await loginPage.open();
+  });
+
+  test("standard user can log in and sees inventory page", async ({ page }) => {
+    await loginPage.login("standard_user", "secret_sauce");
+    await expect(page).toHaveURL(/inventory/);
+  });
+
+  test("locked out user sees error message", async ({ page }) => {
+    await loginPage.login("locked_out_user", "secret_sauce");
+    await expect(loginPage.errorMessage).toContainText("locked out");
+  });
+
+  test("wrong password shows error message", async ({ page }) => {
+    await loginPage.login("standard_user", "wrong_password");
+    await expect(loginPage.errorMessage).toBeVisible();
+  });
+
+  test("empty username shows validation error", async ({ page }) => {
+    await loginPage.login("", "secret_sauce");
+    await expect(loginPage.errorMessage).toBeVisible();
+  });
+});

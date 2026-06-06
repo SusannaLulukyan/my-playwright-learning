@@ -24,4 +24,16 @@ test.describe("Cart", () => {
     await page.getByRole("button", { name: /remove/i }).click();
     await expect(inventoryPage.cartBadge).not.toBeVisible();
   });
+
+  test("cart page shows the name of the selected product", async ({ page }) => {
+    await inventoryPage.addProductToCart("Sauce Labs Backpack");
+    await inventoryPage.openCart();
+    await expect(page.getByText("Sauce Labs Backpack")).toBeVisible();
+  });
+
+  test("adding multiple products shows correct badge count", async ({ page }) => {
+    await inventoryPage.addProductToCart("Sauce Labs Backpack");
+    await inventoryPage.addProductToCart("Sauce Labs Bike Light");
+    await expect(inventoryPage.cartBadge).toHaveText("2");
+  });
 });
